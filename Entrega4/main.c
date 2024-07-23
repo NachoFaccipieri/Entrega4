@@ -50,7 +50,7 @@ int main(void)
 	uint8_t lecturaADC;
 	
 	Iniciar_Sistema();
-	estado = verde;
+	estado = inicial;
 	while (1)
 	{
 		chequeoEntrada();
