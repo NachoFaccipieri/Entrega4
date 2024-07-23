@@ -14,10 +14,9 @@ void chequeoEntrada(void);
 uint8_t leerADC(void);
 
 volatile char RX_Buffer=0;
-uint8_t setR, setB, setG;
 uint8_t intRojo;
 
-typedef enum{rojo, verde, azul}state;
+typedef enum{rojo, verde, azul, inicial}state;
 state estado;
 
 int main(void)
@@ -28,8 +27,8 @@ int main(void)
 	TCCR1A |= (1<<COM1A0) | (1<<COM1A1);	//Set OC1A on compare match
 	TCCR1A |= (1<<COM1B0) | (1<<COM1B1);
 
-	OCR1A =0;	//Azul
-	OCR1B = 50;	//Verde
+	OCR1A = 0;	//Azul
+	OCR1B = 0;	//Verde
 	intRojo = 0;
 
 	DDRB |= (1<<PINB1);
@@ -51,11 +50,11 @@ int main(void)
 	uint8_t lecturaADC;
 	
 	Iniciar_Sistema();
-	estado = rojo;
+	estado = verde;
 	while (1)
 	{
 		chequeoEntrada();
-		lecturaADC = leerADC();		
+		lecturaADC = leerADC();
 		//En el registro OCR1A y OCR1B se controlan las intensidades del led verde y azul respectivamente
 		
 		switch(estado){
@@ -68,10 +67,14 @@ int main(void)
 			case(azul):
 				OCR1A = lecturaADC;
 				break;
+			case (inicial):
+				break;
 		}
-		if(TCNT1 < intRojo){//prendo
+		if(TCNT1 < intRojo){
+			//Se enciende
 			PORTB &= ~(1<<PINB5);
-			} else {//apago
+			} else {
+			//Se apaga
 			PORTB |= (1<<PINB5);
 		}
 	}
